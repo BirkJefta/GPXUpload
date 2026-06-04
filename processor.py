@@ -183,7 +183,7 @@ def route_data_builder(timestamps):
 
 
 def create_thumbnail(geom_wkt, simplified_coords):
-    geoapify_api_key = "e6e42db191d24603888d14e9c2c33a19"
+    geoapify_api_key = os.environ.get("GEOAPIFY_API_KEY")
     url = f"https://maps.geoapify.com/v1/staticmap?apiKey={geoapify_api_key}"
     
     purple_color = "#8e44ad"
