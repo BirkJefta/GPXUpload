@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+gpxpy
+rdp
+requests
+Pillow
+supabase
+python-multipart
+websockets
