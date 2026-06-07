@@ -1,4 +1,4 @@
-Readme made using Gemini
+Gemini AI used to format Readme
 
 # Sail Log Processor
 
