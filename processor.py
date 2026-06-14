@@ -67,7 +67,7 @@ def add_tracks(track_payload):
 def process_gpx(gpx_string):
     gpx = gpxpy.parse(gpx_string)
     status_codes = []
-    test_tracks = gpx.tracks[10:]
+    test_tracks = gpx.tracks
 
     for track in test_tracks:
         for segment in track.segments:
@@ -88,6 +88,8 @@ def process_gpx(gpx_string):
     
         
 def new_track_object(track,segment):
+    if not segment.points or len(segment.points) < 2:
+        raise Exception("Track segment contains less than 2 points, cannot create track object.")
     name = track.name
     new_name = is_name_a_date(name)
     start_time = segment.points[0].time
@@ -165,7 +167,7 @@ def simplify_coords(points, eps):
 
     simplified_lon_lat_strings = []
     timestamps = []
-    raw_list_for_api = [] # Ny liste til Geoapify
+    raw_list_for_api = [] 
 
     for i in range(len(raw_points)):
         if mask[i]:
@@ -173,6 +175,14 @@ def simplify_coords(points, eps):
             simplified_lon_lat_strings.append(f"{p.longitude} {p.latitude}")
             raw_list_for_api.append([p.longitude, p.latitude]) 
             timestamps.append(p.time.isoformat() if p.time else None)
+    
+    #if not enough points then use all points, otherwise a linestring cant be created and the track will fail to save.
+    if len(simplified_lon_lat_strings) < 2:
+        simplified_lon_lat_strings = [
+            f"{p.longitude} {p.latitude}" for p in raw_points
+        ]
+        raw_list_for_api = [[p.longitude, p.latitude] for p in raw_points]
+        timestamps = [p.time.isoformat() if p.time else None for p in raw_points]
             
     wkt_geom = f"LINESTRING({', '.join(simplified_lon_lat_strings)})"
     return wkt_geom, timestamps, raw_list_for_api

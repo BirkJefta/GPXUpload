@@ -18,15 +18,26 @@ app.add_middleware(
 #get file from request, first as bytes then decode to a string. 
 #then the processor will handle the string and return processed track_objects as a list of dicts.
 @app.post("/upload-gpx")
-
 async def upload_gpx(file: UploadFile = File(...)):
-    
-    bytes_content = await file.read()
-    gpx_string = bytes_content.decode("utf-8")
+    try:
+        bytes_content = await file.read()
+        gpx_string = bytes_content.decode("utf-8")
 
-    result = process_gpx(gpx_string)
-    
-    return {"status": "success", "data": result}
+        result = process_gpx(gpx_string)
+
+        return {"status": "success", "data": result}
+
+    except UnicodeDecodeError:
+        raise HTTPException(
+            status_code=400,
+            detail="File is not valid UTF-8"
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 @app.post("/upload-json")
 async def upload_json(data: dict = Body(...)):
