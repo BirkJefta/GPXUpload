@@ -140,10 +140,17 @@ def calculate_distance(segment):
     distance = segment.length_2d() / 1852
     return distance
 
+
 def calculate_time(start_time, end_time):
-    total_time = end_time - start_time
-    minutes = int(total_time.total_seconds() / 60)
-    return minutes
+    if not start_time or not end_time:
+        return None
+
+    duration = end_time - start_time
+
+    if duration.total_seconds() < 0:
+        return None
+
+    return int(duration.total_seconds() / 60)
 
 
     
